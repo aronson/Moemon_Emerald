@@ -754,7 +754,7 @@ u8 HandleSavingData(u8 saveType)
         // Save the Hall of Fame
         tempAddr = gDecompressionBuffer;
         HandleWriteSectorNBytes(SECTOR_ID_HOF_1, tempAddr, SECTOR_DATA_SIZE);
-        HandleWriteSectorNBytes(SECTOR_ID_HOF_2, tempAddr + SECTOR_DATA_SIZE, SECTOR_DATA_SIZE);
+        //HandleWriteSectorNBytes(SECTOR_ID_HOF_2, tempAddr + SECTOR_DATA_SIZE, SECTOR_DATA_SIZE);
         break;
     case SAVE_NORMAL:
     default:
@@ -913,8 +913,8 @@ u8 LoadGameSave(u8 saveType)
         break;
     case SAVE_HALL_OF_FAME:
         status = TryLoadSaveSector(SECTOR_ID_HOF_1, gDecompressionBuffer, SECTOR_DATA_SIZE);
-        if (status == SAVE_STATUS_OK)
-            status = TryLoadSaveSector(SECTOR_ID_HOF_2, &gDecompressionBuffer[SECTOR_DATA_SIZE], SECTOR_DATA_SIZE);
+        //if (status == SAVE_STATUS_OK)
+            //status = TryLoadSaveSector(SECTOR_ID_HOF_2, &gDecompressionBuffer[SECTOR_DATA_SIZE], SECTOR_DATA_SIZE);
         break;
     }
 
@@ -952,7 +952,7 @@ u32 TryReadSpecialSaveSector(u8 sector, u8 *dst)
     s32 size;
     u8 *savData;
 
-    if (sector != SECTOR_ID_TRAINER_HILL && sector != SECTOR_ID_RECORDED_BATTLE)
+    if (/*sector != SECTOR_ID_TRAINER_HILL &&*/ sector != SECTOR_ID_RECORDED_BATTLE)
         return SAVE_STATUS_ERROR;
 
     ReadFlash(sector, 0, (u8 *)&gSaveDataBuffer, SECTOR_SIZE);
@@ -975,7 +975,7 @@ u32 TryWriteSpecialSaveSector(u8 sector, u8 *src)
     u8 *savData;
     void *savDataBuffer;
 
-    if (sector != SECTOR_ID_TRAINER_HILL && sector != SECTOR_ID_RECORDED_BATTLE)
+    if (/*sector != SECTOR_ID_TRAINER_HILL &&*/ sector != SECTOR_ID_RECORDED_BATTLE)
         return SAVE_STATUS_ERROR;
 
     savDataBuffer = &gSaveDataBuffer;
@@ -1090,48 +1090,59 @@ bool8 UpdateSaveFile(void)
     u8* ptr3;
     int i;
     bool8 result = TRUE;
-    // Load the old save file into the heap
-    sOldSaveBlock = AllocZeroed(SECTOR_DATA_SIZE * NUM_SECTORS_PER_SLOT);
-    // Assign locations to load the old save block into the heap
-    ptr1 = sOldSaveBlock; //pretend this is gSaveBlock2Ptr
-    ptr2 = sOldSaveBlock; //pretend this is gSaveBlock1Ptr
-    ptr3 = sOldSaveBlock; //pretend this is gPokemonStoragePtr
-    i = SECTOR_ID_SAVEBLOCK2;
-
-    gRamSaveSectorLocations[i].data = (void *)(ptr1) + sSaveSlotLayout[i].offset;
-    gRamSaveSectorLocations[i].size = sSaveSlotLayout[i].size;
-    ptr3 = ptr2 = ptr1 + sSaveSlotLayout[i].size;
-
-    for (i = SECTOR_ID_SAVEBLOCK1_START; i <= SECTOR_ID_SAVEBLOCK1_END; i++)
-    {
-        gRamSaveSectorLocations[i].data = (void *)(ptr2) + sSaveSlotLayout[i].offset;
-        gRamSaveSectorLocations[i].size = sSaveSlotLayout[i].size;
-        ptr3 += sSaveSlotLayout[i].size;
-    }
-
-    for (i = SECTOR_ID_PKMN_STORAGE_START; i <= SECTOR_ID_PKMN_STORAGE_END; i++)
-    {
-        gRamSaveSectorLocations[i].data = (void *)(ptr3) + sSaveSlotLayout[i].offset;
-        gRamSaveSectorLocations[i].size = sSaveSlotLayout[i].size;
-    }
-    // Load the save from FLASH and onto the heap
-    CopySaveSlotData(FULL_SAVE_SLOT, gRamSaveSectorLocations);
-    // Zero out the data currently loaded into the save structs
-    CpuFill16(0, &gSaveblock2, sizeof(struct SaveBlock2ASLR));
-    CpuFill16(0, &gSaveblock1, sizeof(struct SaveBlock1ASLR));
-    CpuFill16(0, &gPokemonStorage, sizeof(struct PokemonStorageASLR));
-    // Attempt to update the save
+    struct SaveSector* sector;
     switch (version) {
         case 0: // Upgrading from vanilla to version 1
+            // Load the old save file into the heap
+            sOldSaveBlock = AllocZeroed(SECTOR_DATA_SIZE * NUM_SECTORS_PER_SLOT);
+            // Assign locations to load the old save block into the heap
+            ptr1 = sOldSaveBlock; //pretend this is gSaveBlock2Ptr
+            ptr2 = sOldSaveBlock; //pretend this is gSaveBlock1Ptr
+            ptr3 = sOldSaveBlock; //pretend this is gPokemonStoragePtr
+            i = SECTOR_ID_SAVEBLOCK2;
+
+            gRamSaveSectorLocations[i].data = (void *)(ptr1) + sSaveSlotLayout[i].offset;
+            gRamSaveSectorLocations[i].size = sSaveSlotLayout[i].size;
+            ptr3 = ptr2 = ptr1 + sSaveSlotLayout[i].size;
+
+            for (i = SECTOR_ID_SAVEBLOCK1_START; i <= SECTOR_ID_SAVEBLOCK1_END; i++)
+            {
+                gRamSaveSectorLocations[i].data = (void *)(ptr2) + sSaveSlotLayout[i].offset;
+                gRamSaveSectorLocations[i].size = sSaveSlotLayout[i].size;
+                ptr3 += sSaveSlotLayout[i].size;
+            }
+
+            for (i = SECTOR_ID_PKMN_STORAGE_START; i <= SECTOR_ID_PKMN_STORAGE_END; i++)
+            {
+                gRamSaveSectorLocations[i].data = (void *)(ptr3) + sSaveSlotLayout[i].offset;
+                gRamSaveSectorLocations[i].size = sSaveSlotLayout[i].size;
+            }
+            // Load the save from FLASH and onto the heap
+            CopySaveSlotData(FULL_SAVE_SLOT, gRamSaveSectorLocations);
+            // Zero out the data currently loaded into the save structs
+            CpuFill16(0, &gSaveblock2, sizeof(struct SaveBlock2ASLR));
+            CpuFill16(0, &gSaveblock1, sizeof(struct SaveBlock1ASLR));
+            CpuFill16(0, &gPokemonStorage, sizeof(struct PokemonStorageASLR));
+            // Attempt to update the save
             result = UpdateSave_v0_v1(gRamSaveSectorLocations);
+            // Clean up and perform post-load copying operations
+            Free(sOldSaveBlock);
+            CopyPartyAndObjectsFromSave();
+        case 1:
+            if (version == 1) {
+                // Load the save from FLASH and onto the heap
+                CopySaveSlotData(FULL_SAVE_SLOT, gRamSaveSectorLocations);
+            }
+            gSaveBlock2Ptr->saveVersion = 2;
+            // Read old hall of fame data
+            TryLoadSaveSector(SECTOR_ID_HOF_1_v0, gDecompressionBuffer, SECTOR_DATA_SIZE);
+            // Write HOF data to new location
+            HandleWriteSectorNBytes(SECTOR_ID_HOF_1, gDecompressionBuffer, SECTOR_DATA_SIZE);
             break;
         default: // Unsupported version to upgrade
             result = FALSE;
             break;
     }
-    // Clean up and perform post-load copying operations
-    Free(sOldSaveBlock);
-    CopyPartyAndObjectsFromSave();
-    // Note, the save is now up-to-date, but it won't be saved back to FLASH until the player saves the game.
+    // Note, the save is now up-to-date, and has been potentially partially saved to flash
     return result;
 }

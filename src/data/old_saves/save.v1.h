@@ -113,7 +113,7 @@ struct SaveBlock2_v1 {
 };
 
 struct SaveBlock1_v1 {
-    struct Coords16 pos
+    struct Coords16 pos;
     struct WarpData location;
     struct WarpData continueGameWarp;
     struct WarpData dynamicWarp;

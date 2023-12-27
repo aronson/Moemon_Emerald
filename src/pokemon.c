@@ -2168,7 +2168,7 @@ const u8 gRandomizationTypes[7][25] =
     [TX_RANDOM_T_EVO_METH]        = _("TX RANDOM EVO METH "),
     [TX_RANDOM_T_STATIC]          = _("TX RANDOM STATIC   "),
 };
-const u8 gEvoStages[5][20] = 
+const u8 gEvoStages[5][20] =
 {
     [EVO_TYPE_0]            = _("EVO TYPE 0"),
     [EVO_TYPE_1]            = _("EVO TYPE 1"),
@@ -7108,11 +7108,11 @@ const u16 gEvolutionLines[NUM_SPECIES][EVOS_PER_LINE] =
     [SPECIES_SPEAROW ... SPECIES_FEAROW]        = {SPECIES_SPEAROW, SPECIES_FEAROW},
     [SPECIES_EKANS ... SPECIES_ARBOK]           = {SPECIES_EKANS, SPECIES_ARBOK},
     #ifdef POKEMON_EXPANSION
-    [SPECIES_PIKACHU ... SPECIES_RAICHU]        = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU, SPECIES_RAICHU_ALOLAN}, 
-    [SPECIES_PICHU]                             = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU, SPECIES_RAICHU_ALOLAN}, 
+    [SPECIES_PIKACHU ... SPECIES_RAICHU]        = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU, SPECIES_RAICHU_ALOLAN},
+    [SPECIES_PICHU]                             = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU, SPECIES_RAICHU_ALOLAN},
     [SPECIES_RAICHU_ALOLAN]                     = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU, SPECIES_RAICHU_ALOLAN},
     #else
-    [SPECIES_PIKACHU ... SPECIES_RAICHU]        = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU}, 
+    [SPECIES_PIKACHU ... SPECIES_RAICHU]        = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU},
     [SPECIES_PICHU]                             = {SPECIES_PICHU, SPECIES_PIKACHU, SPECIES_RAICHU},
     #endif
     [SPECIES_SANDSHREW ... SPECIES_SANDSLASH]   = {SPECIES_SANDSHREW, SPECIES_SANDSLASH},
@@ -8726,12 +8726,12 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         u32 shinyRolls = 1;
         #endif
         u32 i;
-        
+
         value = gSaveBlock2Ptr->playerTrainerId[0]
                   | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
                   | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
                   | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
-                  
+
         for (i = 0; i < shinyRolls; i++)
         {
             if (Random() < SHINY_ODDS)
@@ -8745,12 +8745,12 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
                 personality = Random32();
                 personality = ((((Random() % SHINY_ODDS) ^ (HIHALF(value) ^ LOHALF(value))) ^ LOHALF(personality)) << 16) | LOHALF(personality);
             } while (nature != GetNatureFromPersonality(personality));
-            
+
             // clear the flag after use
             FlagClear(FLAG_SHINY_CREATION);
         }
     }
-    
+
     SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);
     SetBoxMonData(boxMon, MON_DATA_OT_ID, &value);
 
@@ -8805,7 +8805,7 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         value = personality & 1;
         SetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, &value);
     }
-    
+
     value = HIDDEN_NATURE_NONE;
     SetBoxMonData(boxMon, MON_DATA_HIDDEN_NATURE, &value);
 
@@ -9372,13 +9372,13 @@ void CalculateMonStats(struct Pokemon *mon)
         {
         case 0:
             break;
-        case 1: 
+        case 1:
             n = 2 * 100 + hpIV;
             break;
-        case 2: 
+        case 2:
             n = 2 * 255 + hpIV;
             break;
-        case 3: 
+        case 3:
             n = 2 * 500 + hpIV;
             break;
         default:
@@ -9555,7 +9555,7 @@ void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon)
             if (!FlagGet(FLAG_SYS_POKEMON_GET) && !firstMoveGiven)
             {
                 u8 j;
-                
+
                 #ifndef NDEBUG
                 MgbaPrintf(MGBA_LOG_DEBUG, "Generate 1 damaging move");
                 #endif
@@ -10121,53 +10121,6 @@ static void DecryptBoxMon(struct BoxPokemon *boxMon)
     }
 }
 
-#define SUBSTRUCT_CASE(n, v1, v2, v3, v4)                               \
-case n:                                                                 \
-    {                                                                   \
-    union PokemonSubstruct *substructs0 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs1 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs2 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs3 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs4 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs5 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs6 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs7 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs8 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs9 = boxMon->secure.substructs;    \
-    union PokemonSubstruct *substructs10 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs11 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs12 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs13 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs14 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs15 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs16 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs17 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs18 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs19 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs20 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs21 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs22 = boxMon->secure.substructs;   \
-    union PokemonSubstruct *substructs23 = boxMon->secure.substructs;   \
-                                                                        \
-        switch (substructType)                                          \
-        {                                                               \
-        case 0:                                                         \
-            substruct = &substructs ## n [v1];                          \
-            break;                                                      \
-        case 1:                                                         \
-            substruct = &substructs ## n [v2];                          \
-            break;                                                      \
-        case 2:                                                         \
-            substruct = &substructs ## n [v3];                          \
-            break;                                                      \
-        case 3:                                                         \
-            substruct = &substructs ## n [v4];                          \
-            break;                                                      \
-        }                                                               \
-        break;                                                          \
-    }                                                                   \
-
-
 static union PokemonSubstruct *GetSubstruct(struct BoxPokemon *boxMon, u8 substructType)
 {
     union PokemonSubstruct *substructs = boxMon->secure.substructs;
@@ -10246,7 +10199,7 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
 {
     s32 i;
     u32 retVal = 0;
-    
+
     struct PokemonSubstruct0 *substruct0 = NULL;
     struct PokemonSubstruct1 *substruct1 = NULL;
     struct PokemonSubstruct2 *substruct2 = NULL;
@@ -10338,7 +10291,7 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
         retVal = boxMon->checksum;
         break;
     case MON_DATA_ENCRYPT_SEPARATOR:
-        retVal = boxMon->unknown;
+        retVal = boxMon->unused1E;
         break;
     case MON_DATA_SPECIES:
         retVal = boxMon->isBadEgg ? SPECIES_EGG : substruct0->species;
@@ -10702,7 +10655,7 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         SET16(boxMon->checksum);
         break;
     case MON_DATA_ENCRYPT_SEPARATOR:
-        SET16(boxMon->unknown);
+        SET16(boxMon->unused1E);
         break;
     case MON_DATA_SPECIES:
     {
@@ -10929,8 +10882,8 @@ u8 GiveMonToPlayer(struct Pokemon *mon)
     if (i >= GetMaxPartySize()) //tx_randomizer_and_challenges
         return SendMonToPC(mon);
 
-    if (typeChallenge != TX_CHALLENGE_TYPE_OFF && 
-                    GetTypeBySpecies(GetMonData(mon, MON_DATA_SPECIES, NULL), 1) != typeChallenge && 
+    if (typeChallenge != TX_CHALLENGE_TYPE_OFF &&
+                    GetTypeBySpecies(GetMonData(mon, MON_DATA_SPECIES, NULL), 1) != typeChallenge &&
                     GetTypeBySpecies(GetMonData(mon, MON_DATA_SPECIES, NULL), 2) != typeChallenge)
         return SendMonToPC(mon);
 
@@ -11219,7 +11172,7 @@ void CopyPlayerPartyMonToBattleData(u8 battlerId, u8 partyIndex, bool8 resetStat
     {
         for (i = 0; i < NUM_BATTLE_STATS; i++)
             gBattleMons[battlerId].statStages[i] = DEFAULT_STAT_STAGE;
-            
+
         gBattleMons[battlerId].status2 = 0;
     }
     UpdateSentPokesToOpponentValue(battlerId);
@@ -12025,11 +11978,11 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem)
     //tx_randomizer_and_challenges
     if (EvolutionBlockedByEvoLimit(species)) //No Evos already previously checked
         return SPECIES_NONE;
-    if (gSaveBlock1Ptr->tx_Random_EvolutionMethods) 
+    if (gSaveBlock1Ptr->tx_Random_EvolutionMethods)
         species = GetSpeciesRandomSeeded(species, TX_RANDOM_T_EVO_METH, 0);
     if (species == SPECIES_NONE)
         return SPECIES_NONE;
-    
+
 
     if (heldItem == ITEM_ENIGMA_BERRY)
         holdEffect = gSaveBlock1Ptr->enigmaBerry.holdEffect;
@@ -12759,7 +12712,7 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
 u32 CanMonLearnTMHM(struct Pokemon *mon, u8 tm)
 {
     u16 species = GetMonData(mon, MON_DATA_SPECIES2, 0);
-    
+
     //tx_randomizer_and_challenges
     if (gSaveBlock1Ptr->tx_Random_Moves)
         species = GetSpeciesRandomSeeded(species, TX_RANDOM_T_MOVES, 0);
@@ -12855,7 +12808,7 @@ u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves)
     u16 move; //tx_randomizer_and_challenges
 
     for (i = 0; i < MAX_LEVEL_UP_MOVES && gLevelUpLearnsets[species][i] != LEVEL_UP_END; i++)
-    { 
+    {
         //tx_randomizer_and_challenges
         move = gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID;
         if (gSaveBlock1Ptr->tx_Random_Moves) //tx_randomizer_and_challenges
@@ -13481,7 +13434,7 @@ void HandleSetPokedexFlag(u16 nationalNum, u8 caseId, u32 personality)
         if (NationalPokedexNumToSpecies(nationalNum) == SPECIES_SPINDA)
             gSaveBlock2Ptr->pokedex.spindaPersonality = personality;
     }
-    
+
     if (caseId == FLAG_SET_SEEN)
         TryIncrementSpeciesSearchLevel(nationalNum);    // encountering pokemon increments its search level
 }
@@ -13715,7 +13668,7 @@ void RandomizeTypeEffectivenessListEWRAM(u16 seed)
     {
         if (i != TYPE_MYSTERY)
             sTypeEffectivenessList[i] = stemp[i];
-        
+
         #ifndef NDEBUG
             MgbaPrintf(MGBA_LOG_DEBUG, "sTypeEffectivenessList[%d]: %S => %S", i, gTypeNames[i], gTypeNames[sTypeEffectivenessList[i]] );
         #endif
@@ -13729,7 +13682,7 @@ u8 GetTypeEffectivenessRandom(u8 type)
 {
     if (type == TYPE_NONE)
         return TYPE_NONE;
-    
+
     if (!gSaveBlock1Ptr->tx_Random_TypeEffectiveness)
         return type;
 
@@ -13752,7 +13705,7 @@ u16 PickRandomStarterForOneTypeChallenge(u16 *speciesList, u8 starterId)
         for (i=0; i<RANDOM_SPECIES_EVO_0_COUNT; i++)
         {
             species = stemp[i];
-            if ((GetTypeBySpecies(species, 1) == typeChallenge || GetTypeBySpecies(species, 2) == typeChallenge) 
+            if ((GetTypeBySpecies(species, 1) == typeChallenge || GetTypeBySpecies(species, 2) == typeChallenge)
                 && species != speciesList[0] && species != speciesList[1] && species != speciesList[2])
                 break;
         }
@@ -13770,7 +13723,7 @@ u16 PickRandomStarterForOneTypeChallenge(u16 *speciesList, u8 starterId)
         for (i=0; i<RANDOM_SPECIES_COUNT_LEGENDARY; i++)
         {
             species = stemp[i];
-            if ((GetTypeBySpecies(species, 1) == typeChallenge || GetTypeBySpecies(species, 2) == typeChallenge) 
+            if ((GetTypeBySpecies(species, 1) == typeChallenge || GetTypeBySpecies(species, 2) == typeChallenge)
                 && species != speciesList[0] && species != speciesList[1] && species != speciesList[2])
                 break;
         }
@@ -13788,7 +13741,7 @@ u16 PickRandomStarterForOneTypeChallenge(u16 *speciesList, u8 starterId)
         for (i=0; i<RANDOM_SPECIES_COUNT; i++)
         {
             species = stemp[i];
-            if ((GetTypeBySpecies(species, 1) == typeChallenge || GetTypeBySpecies(species, 2) == typeChallenge) 
+            if ((GetTypeBySpecies(species, 1) == typeChallenge || GetTypeBySpecies(species, 2) == typeChallenge)
                 && species != speciesList[0] && species != speciesList[1] && species != speciesList[2])
                 break;
         }
@@ -13812,7 +13765,7 @@ u16 PickRandomStarter(u16 *speciesList, u8 starterId)
     u16 species;
     if (gSaveBlock1Ptr->tx_Random_Chaos)
         return sRandomSpeciesLegendary[RandomSeededModulo(species, RANDOM_SPECIES_COUNT_LEGENDARY)];
-    
+
     if (gSaveBlock1Ptr->tx_Random_Similar)
     {
         u16 *stemp = Alloc(sizeof(sRandomSpeciesEvo0));
@@ -13838,8 +13791,8 @@ u16 PickRandomStarter(u16 *speciesList, u8 starterId)
         ShuffleListU16(stemp, RANDOM_SPECIES_COUNT, 12289);
         species = stemp[starterId*27];
         Free(stemp);
-        return species;  
-    } 
+        return species;
+    }
 }
 
 u8 GetTypeBySpecies(u16 species, u8 typeNum)
@@ -13957,7 +13910,7 @@ u16 GetRandomMove(u16 move, u16 species)
 {
     u16 val = RandomSeededModulo(move + species, RANDOM_MOVES_COUNT);
     u16 final = sRandomValidMoves[val];
-    
+
     #ifndef NDEBUG
         MgbaPrintf(MGBA_LOG_DEBUG, "TX RANDOM MOVE     : GetRandomMove: move=%d=%S, species=%d; combined=%d; val=%d; final=%d=%S", move,  gMoveNames[move], species, move + species, val, final, gMoveNames[final]);
     #endif

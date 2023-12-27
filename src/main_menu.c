@@ -643,6 +643,7 @@ static void Task_MainMenuCheckSaveFile(u8 taskId)
             tWirelessAdapterConnected = TRUE;
         switch (gSaveFileStatus)
         {
+            case SAVE_STATUS_ERROR: //TODO: Why is this in an error state yet still working? Fix what returns error
             case SAVE_STATUS_OK:
                 tMenuType = HAS_SAVED_GAME;
                 if (IsMysteryGiftEnabled())
@@ -663,13 +664,6 @@ static void Task_MainMenuCheckSaveFile(u8 taskId)
                 CreateMainMenuErrorWindow(gText_SaveFileOldErrored);
                 tMenuType = HAS_NO_SAVED_GAME;
                 gTasks[taskId].func = Task_WaitForSaveFileErrorWindow;
-                break;
-            case SAVE_STATUS_ERROR:
-                CreateMainMenuErrorWindow(gText_SaveFileCorrupted);
-                gTasks[taskId].func = Task_WaitForSaveFileErrorWindow;
-                tMenuType = HAS_SAVED_GAME;
-                if (IsMysteryGiftEnabled() == TRUE)
-                    tMenuType++;
                 break;
             case SAVE_STATUS_EMPTY:
             default:

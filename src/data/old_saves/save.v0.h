@@ -10,6 +10,19 @@
 #include "save.h"
 #include "malloc.h"
 
+#define SECTOR_ID_SAVEBLOCK2_v0          0
+#define SECTOR_ID_SAVEBLOCK1_START_v0    1
+#define SECTOR_ID_SAVEBLOCK1_END_v0      4
+#define SECTOR_ID_PKMN_STORAGE_START_v0  5
+#define SECTOR_ID_PKMN_STORAGE_END_v0   13
+#define NUM_SECTORS_PER_SLOT_v0         14
+// Save Slot 1: 0-13;  Save Slot 2: 14-27
+#define SECTOR_ID_HOF_1_v0              28
+#define SECTOR_ID_HOF_2_v0              29
+#define SECTOR_ID_TRAINER_HILL_v0       30
+#define SECTOR_ID_RECORDED_BATTLE_v0    31
+#define SECTORS_COUNT_v0                32
+
 struct ObjectEvent_v0 {
     u32 active: 1;
     u32 singleMovementActive: 1;
