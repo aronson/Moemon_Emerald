@@ -3,47 +3,49 @@ ENTRY(Start)
 gNumMusicPlayers = 4;
 gMaxLines = 0;
 
-SECTIONS {
-    . = 0x2000000;
-
-    ewram (NOLOAD) :
-    ALIGN(4)
-    {
-        gHeap = .;
-
-        . = 0x1C000;
-
-        src/*.o(ewram_data);
-        gflib/*.o(ewram_data);
-
-        . = 0x40000;
+MEMORY
+{
+    EWRAM (rwx) : ORIGIN = 0x2000000, LENGTH = 256K
+    IWRAM (rwx) : ORIGIN = 0x3000000, LENGTH = 32K
+    ROM    (rx) : ORIGIN = 0x8000000, LENGTH = 16M
 }
 
-    . = 0x3000000;
+SECTIONS {
+
+    ewram_bss (NOLOAD) : ALIGN(4)
+    {
+        gHeap = .;
+        . = 0x1C000;
+        src/*.o(ewram_data);
+        gflib/*.o(ewram_data);
+    } > EWRAM
+
+    ewram : AT (__ewram_lma)
+    ALIGN(4)
+    {
+        __ewram_start = .;
+        *(.ewram)
+        __ewram_end = .;
+    } > EWRAM
 
     iwram (NOLOAD) :
     ALIGN(4)
     {
-        /* .bss starts at 0x3000000 */
         src/*.o(.bss);
         gflib/*.o(.bss);
         data/*.o(.bss);
         *libc.a:*.o(.bss*);
         *libnosys.a:*.o(.bss*);
 
-        /* .bss.code starts at 0x3001AA8 */
         src/m4a.o(.bss.code);
 
-        /* COMMON starts at 0x30022A8 */
         src/*.o(COMMON);
         gflib/*.o(COMMON);
         *libc.a:*.o(COMMON);
         *libnosys.a:*.o(COMMON);
-        end = .;
-        . = 0x8000;
-    }
+    } > IWRAM
 
-    . = 0x8000000;
+    /* BEGIN ROM DATA */
 
     .text :
     ALIGN(4)
@@ -55,13 +57,13 @@ SECTIONS {
         gflib/*.o(.text*);
         src/*.o(.text*);
         asm/*.o(.text*);
-    } =0
+    } > ROM =0
 
     script_data :
     ALIGN(4)
     {
 		data/*.o(script_data);
-    } =0
+    } > ROM =0
 
     lib_text :
     ALIGN(4)
@@ -82,7 +84,7 @@ SECTIONS {
         *libc.a:*.o(.text*);
         *libnosys.a:*.o(.text*);
         src/libisagbprn.o(.text);
-    } =0
+    } > ROM =0
 
     .rodata :
     ALIGN(4)
@@ -90,13 +92,13 @@ SECTIONS {
         src/*.o(.rodata*);
         gflib/*.o(.rodata*);
         data/*.o(.rodata*);
-    } =0
+    } > ROM =0
 
     song_data :
     ALIGN(4)
     {
         sound/songs/*.o(.rodata);
-    } =0
+    } > ROM =0
 
     lib_rodata :
     SUBALIGN(4)
@@ -113,7 +115,7 @@ SECTIONS {
         *libc.a:*.o(.rodata*);
         *libc.a:*.o(.data*);
         src/libisagbprn.o(.rodata);
-    } =0
+    } > ROM =0
 
     multiboot_data :
     ALIGN(4)
@@ -121,19 +123,26 @@ SECTIONS {
         data/multiboot_ereader.o(.rodata);
         data/multiboot_berry_glitch_fix.o(.rodata);
         data/multiboot_pokemon_colosseum.o(.rodata);
-    } =0
+    } > ROM =0
 
     anim_mon_front_pic_data :
     ALIGN(4)
     {
         src/anim_mon_front_pics.o(.rodata);
-    } =0
+    } > ROM =0
 
     gfx_data :
     ALIGN(4)
     {
         src/graphics.o(.rodata);
-    } =0
+    } > ROM =0
+
+    ewram_load :
+    ALIGN(4)
+    {
+        __ewram_lma = .;
+        __ewram_lma_end = . + (__ewram_end - __ewram_start);
+    } > ROM =0
 
     /* DWARF debug sections.
        Symbols in the DWARF debugging sections are relative to the beginning
@@ -166,3 +175,4 @@ SECTIONS {
         *(*);
     }
 }
+

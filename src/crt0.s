@@ -15,10 +15,17 @@ Init::
 	ldr r1, =INTR_VECTOR
 	adr r0, IntrMain
 	str r0, [r1]
-	.if MODERN
+    .if MODERN
 	mov r0, #255 @ RESET_ALL
 	svc #1 << 16
 	.endif @ MODERN
+@---------------------------------------------------------------------------------
+@ Copy external work ram (ewram section) from LMA to VMA (ROM to RAM)
+@---------------------------------------------------------------------------------
+	ldr r0, =__ewram_lma
+	ldr r1, =__ewram_start
+	ldr r2, =__ewram_end
+	bl	memcpy
 	ldr r1, =AgbMain + 1
 	mov lr, pc
 	bx r1
@@ -119,6 +126,20 @@ IntrMain_RetAddr:
 	strh r2, [r3, #OFFSET_REG_IE - 0x200]
 	strh r1, [r3, #OFFSET_REG_IME - 0x200]
 	msr spsr_cf, r0
+	bx lr
+
+	.pool
+
+	.align 2, 0 @ Don't pad with nop.
+
+memcpy:
+	cmp r1, r2
+	itte ne
+	ldrne r3, [r0], #4
+	strne r3, [r1], #4
+	beq 1f
+	b memcpy
+1:
 	bx lr
 
 	.pool
