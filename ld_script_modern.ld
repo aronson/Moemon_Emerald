@@ -7,28 +7,38 @@ MEMORY
 {
     EWRAM (rwx) : ORIGIN = 0x2000000, LENGTH = 256K
     IWRAM (rwx) : ORIGIN = 0x3000000, LENGTH = 32K
-    ROM    (rx) : ORIGIN = 0x8000000, LENGTH = 16M
+    ROM    (rx) : ORIGIN = 0x8000000, LENGTH = 32M
 }
 
 SECTIONS {
 
-    ewram_bss (NOLOAD) : ALIGN(4)
-    {
-        gHeap = .;
-        . = 0x1C000;
-        src/*.o(ewram_data);
-        gflib/*.o(ewram_data);
-    } > EWRAM
-
-    ewram : AT (__ewram_lma)
+    .ewram ORIGIN(EWRAM) : AT (__ewram_lma)
     ALIGN(4)
     {
         __ewram_start = .;
-        *(.ewram)
+        *(.ewram*)
         __ewram_end = .;
     } > EWRAM
 
-    iwram (NOLOAD) :
+    .ewram.sbss (NOLOAD) :
+    ALIGN(4)
+    {
+        gHeap = .;
+        . = 0x1C000;
+
+        src/*.o(.sbss);
+        gflib/*.o(.sbss);
+    } > EWRAM
+
+    .iwram ORIGIN(IWRAM) : AT (__iwram_lma)
+    ALIGN(4)
+    {
+        __iwram_start = .;
+        *(.iwram*);
+        __iwram_end = .;
+    } > IWRAM
+
+    .iwram.bss (NOLOAD) :
     ALIGN(4)
     {
         src/*.o(.bss);
@@ -47,7 +57,7 @@ SECTIONS {
 
     /* BEGIN ROM DATA */
 
-    .text :
+    .text ORIGIN(ROM) :
     ALIGN(4)
     {
         src/rom_header.o(.text*);
@@ -123,13 +133,13 @@ SECTIONS {
         data/multiboot_ereader.o(.rodata);
         data/multiboot_berry_glitch_fix.o(.rodata);
         data/multiboot_pokemon_colosseum.o(.rodata);
-    } > ROM =0
+    } >ROM =0
 
     anim_mon_front_pic_data :
     ALIGN(4)
     {
         src/anim_mon_front_pics.o(.rodata);
-    } > ROM =0
+    } >ROM =0
 
     gfx_data :
     ALIGN(4)
@@ -137,12 +147,21 @@ SECTIONS {
         src/graphics.o(.rodata);
     } > ROM =0
 
-    ewram_load :
+    .data.iwram :
+    ALIGN(4)
+    {
+        __iwram_lma = .;
+        . = . + (__iwram_end - __iwram_start);
+    } > ROM = 0
+
+    .data.ewram :
     ALIGN(4)
     {
         __ewram_lma = .;
-        __ewram_lma_end = . + (__ewram_end - __ewram_start);
-    } > ROM =0
+        . = . + (__ewram_end - __ewram_start);
+    } > ROM = 0
+
+    __rom_end = .;
 
     /* DWARF debug sections.
        Symbols in the DWARF debugging sections are relative to the beginning
@@ -175,4 +194,3 @@ SECTIONS {
         *(*);
     }
 }
-
