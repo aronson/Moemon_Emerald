@@ -3,6 +3,7 @@
 #include "gba/flash_internal.h"
 #include "fieldmap.h"
 #include "save.h"
+#include "m4a.h"
 #include "task.h"
 #include "malloc.h"
 #include "strings.h"
@@ -775,13 +776,15 @@ u8 HandleSavingData(u8 saveType)
         // Erase Hall of Fame
         for (i = SECTOR_ID_HOF_1; i < SECTORS_COUNT; i++)
             EraseFlashSector(i);
-
         // Overwrite save slot
         CopyPartyAndObjectsToSave();
         WriteSaveSectorOrSlot(FULL_SAVE_SLOT, gRamSaveSectorLocations);
         break;
     }
     gTrainerHillVBlankCounter = backupVar;
+    m4aSoundVSyncOff();
+    save_sram_FLASH();
+    m4aSoundVSyncOn();
     return 0;
 }
 

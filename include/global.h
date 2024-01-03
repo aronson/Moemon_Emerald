@@ -526,6 +526,7 @@ struct SaveBlock2
     u16 contestLinkResults[CONTEST_CATEGORIES_COUNT][CONTESTANT_COUNT];
     struct BattleFrontier frontier;
     u8 itemFlags[ITEM_FLAGS_COUNT];
+    struct Time fakeRTC;
 };
 
 extern struct SaveBlock2 *gSaveBlock2Ptr;

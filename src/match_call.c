@@ -1084,7 +1084,7 @@ static bool32 MapAllowsMatchCall(void)
 
 static bool32 UpdateMatchCallStepCounter(void)
 {
-    if (++sMatchCallState.stepCounter >= 10)
+    if (++sMatchCallState.stepCounter >= 250)
     {
         sMatchCallState.stepCounter = 0;
         return TRUE;

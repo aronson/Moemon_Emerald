@@ -7,7 +7,13 @@
 
 #define FLASH_ROM_SIZE_1M 131072 // 1 megabit ROM
 
-#define SECTORS_PER_BANK 16
+#define SECTORS_PER_BANK 32
+
+#define AGB_ROM  ((u8*)0x8000000)
+#define AGB_SRAM ((u8*)0xE000000)
+#define SRAM_SIZE 64
+#define AGB_SRAM_SIZE SRAM_SIZE*1024
+#define _FLASH_WRITE(pa, pd) { *(((u16 *)AGB_ROM)+((pa)/2)) = pd; __asm("nop"); }
 
 struct FlashSector
 {
@@ -58,6 +64,7 @@ extern u8 gFlashTimeoutFlag;
 
 extern const struct FlashSetupInfo MX29L010;
 extern const struct FlashSetupInfo LE26FV10N1TS;
+extern const struct FlashSetupInfo BOOTLEG_SRAM;
 extern const struct FlashSetupInfo DefaultFlash;
 
 void SwitchFlashBank(u8 bankNum);
@@ -68,10 +75,22 @@ void StopFlashTimer(void);
 void ReadFlash(u16 sectorNum, u32 offset, u8 *dest, u32 size);
 
 u16 WaitForFlashWrite_Common(u8 phase, u8 *addr, u8 lastData);
+u16 WaitForFlashWrite_SRAM(u8 phase, u8 *addr, u8 lastData);
 
 u16 EraseFlashChip_MX(void);
 u16 EraseFlashSector_MX(u16 sectorNum);
 u16 ProgramFlashByte_MX(u16 sectorNum, u32 offset, u8 data);
 u16 ProgramFlashSector_MX(u16 sectorNum, u8 *src);
+
+u16 EraseFlashChip_SRAM(void);
+u16 EraseFlashSector_SRAM(u16 sectorNum);
+u16 ProgramFlashByte_SRAM(u16 sectorNum, u32 offset, u8 data);
+u16 ProgramFlashSector_SRAM(u16 sectorNum, u8 *src);
+
+extern u32 get_flash_type();
+extern void save_sram_FLASH();
+extern u32 FlashType;
+extern u32 FlashSRAMArea;
+extern const u16 mxMaxTime[];
 
 #endif // GUARD_GBA_FLASH_INTERNAL_H

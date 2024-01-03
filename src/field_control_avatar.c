@@ -1,5 +1,6 @@
 #include "global.h"
 #include "battle_setup.h"
+#include "rtc.h"
 #include "bike.h"
 #include "coord_event_weather.h"
 #include "daycare.h"
@@ -569,6 +570,7 @@ static bool8 TryStartStepCountScript(u16 metatileBehavior)
         return FALSE;
     }
 
+    RtcAdvanceTime(0, 0, 30);
     IncrementRematchStepCounter();
     UpdateFriendshipStepCounter();
     UpdateFarawayIslandStepCounter();
